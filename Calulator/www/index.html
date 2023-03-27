@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Easy Calculator</title>
+        <link rel="icon" type="image/x-icon" href="images/iconTemplate.png">
+        <link src="testjquery/jquery-ui-css.css">
+
+        <style>
+
+            body {
+
+                margin: 0 auto;
+                padding: 0;
+            }
+
+            @media only screen and (max-width: 768px) {
+                /* For mobile phones*/
+
+                #img {
+
+                    width: 100%;
+                    position: absolute;
+
+                }
+
+                #calculator {
+
+                    box-sizing: border-box;
+                    width: 100%;
+                    border: none;
+                    
+                }
+
+                #calculatorDisplay {
+
+                    box-sizing: border-box;
+                    width: 100%;
+                    background-color: white;
+                    height: 150px;
+                    color: black;
+                    font-family: Verdana, Geneva, Tahoma, sans-serif;
+                    font-size: 3em;
+                    display: flex;
+                    justify-content: right;
+                    align-items: center;
+                    padding: 10px;
+                    border: none;
+
+                }
+
+                #calculatorKeys {
+
+                    box-sizing: border-box;
+                    display: grid;
+                    grid-template-columns: auto auto auto auto;
+                    padding: 10px;
+                    gap: 0.5em;
+                    background-color: white;
+                    width: 100%;
+                    border: none;
+                        
+                }
+
+                .buttonStyle {
+
+                    box-sizing: border-box;
+                    border: none;
+                    border-radius: 5px;
+                    height: 100%;
+                    width: 100%;
+                    font-family: Verdana, Geneva, Tahoma, sans-serif;
+                    font-size: xx-large;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: #1F69FE;
+                    margin: 0 auto;
+                    
+                }
+
+                .golden {
+
+                    background-color: #C323FE;
+                }
+
+                .isDepressed {
+
+                    background-color: gainsboro;
+                    border: none;
+                }
+
+            }
+
+            @media only screen and (min-width: 768px) {
+                /* Beyond mobile phones*/
+                #calculator {
+
+                    display: none;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+        <img id="img" src="images/splashTemplate.jpeg" alt="splashscreen">
+        <div id="calculator" class="wrapper">
+
+            <div id="calculatorDisplay" class="display">0</div>
+            
+            <div id="calculatorKeys" class="numberbox">
+
+                <button type="button" class="buttonStyle  number">7</button>
+                <button type="button" class="buttonStyle  number">8</button>
+                <button type="button" class="buttonStyle  number">9</button>
+                <button type="button" class="buttonStyle  golden operator" data-action="div">/</button>
+                <button type="button" class="buttonStyle  number">4</button>
+                <button type="button" class="buttonStyle  number">5</button>
+                <button type="button" class="buttonStyle  number">6</button>
+                <button type="button" class="buttonStyle  golden operator" data-action="mul">x</button>
+                <button type="button" class="buttonStyle  number">1</button>
+                <button type="button" class="buttonStyle  number">2</button>
+                <button type="button" class="buttonStyle  number">3</button>
+                <button type="button" class="buttonStyle  golden operator" data-action="sub">-</button>
+                <button type="button" class="buttonStyle " data-action="deci">.</button>
+                <button type="button" class="buttonStyle  number">0</button>              
+                <button type="button" class="buttonStyle  golden" data-action="cal">=</button>
+                <button type="button" class="buttonStyle  golden operator" data-action="add">+</button>
+                <button type="button" class="buttonStyle  golden" data-action="empty"></button>
+                <button type="button" class="buttonStyle  golden" data-action="empty"></button>
+                <button type="button" class="buttonStyle  golden" data-action="empty"></button>
+                <button type="button" class="buttonStyle" data-action="clear">A/C</button>
+
+            </div>
+            
+
+        </div>
+
+
+        <script src="testjquery/jquery-3.6.0.js"></script>
+        <script>
+
+            const width = $( window ).width();
+            const height = $( window ).height();
+
+            $("#img").css("height", height);
+            $(function() {
+
+                setTimeout(function() {
+
+                    $("#img").fadeOut(500);
+                }, 1500);
+            });
+            $("#calculator").css("height", height);
+            $("#calculatorKeys").css("height", height - 150 + "px");
+
+            $(document).ready(function(){
+
+                const calculator = $("#calculator");
+                const display = $("#calculatorDisplay");
+                const keys = $("#calculatorKeys");
+                const oprArray = [];
+                const audioElement = document.createElement('audio');
+                audioElement.setAttribute('src', 'single-classic-click.wav');
+                
+                keys.click(function(event) { //Create an event and listen for it
+
+                    if (event.target.matches("button")) { //Code runs only on button click
+
+                        audioElement.play();
+                        const key = $(event.target);
+                        const action = key.data("action"); //Data-action from html
+                        const displayedNum = display.text();
+                        const keyContent = key.text();
+                        const list = $(".operator");
+                        const prevKeyType = calculator.data("prevKeyType");
+
+                        function calculate(a,operator,b) {
+
+                            result = "";
+                            if (operator === "add") {
+
+                                result = parseFloat(a) + parseFloat(b);
+                            } else if (operator === "sub") {
+
+                                result = parseFloat(a) - parseFloat(b);
+                            } else if (operator === "mul") {
+
+                                result = parseFloat(a) * parseFloat(b);
+                            } else if (operator === "div") {
+
+                                result = parseFloat(a) / parseFloat(b);
+                            }; 
+
+                            return result;
+                        };
+
+                        function saveValues() {
+
+                            calculator.data("prevKeyType", "operator"); //Let the calculator know the prev key is an operator
+                            calculator.data("firstValue", display.text()); //Saving the first number in the jquery to be called later
+                            calculator.data("operator", oprArray[0]); //Saving the operator in the jquery to be called later
+                        };
+
+                        function toCalculate() {
+
+                            firstValue = calculator.data("firstValue");
+                            operator = calculator.data("operator");
+                            secondValue = display.text(); //Saving the second number in the jquery to be called later
+                        };
+
+                        function resDisplay() { //Making the display responsive
+                            if (width > 375 && width < 414) {
+                                
+                                if (display.text().length <= 12) {
+                                    $(".number").prop("disabled", false);
+                                    display.css("font-size", "3em");
+                                } else if (display.text().length > 23) {
+                                    $(".number").prop("disabled", true);
+                                } else if (display.text().length > 18) {
+                                    display.css("font-size", "1.5em");
+                                } else if (display.text().length > 12) {
+                                    display.css("font-size", "2em");
+                                };
+                            } else if (width <= 320) {
+
+                                if (display.text().length <= 10) {
+                                    $(".number").prop("disabled", false);
+                                    display.css("font-size", "3em");
+                                } else if (display.text().length > 19) {
+                                    $(".number").prop("disabled", true);
+                                } else if (display.text().length > 15) {
+                                    display.css("font-size", "1.5em");
+                                } else if (display.text().length > 10) {
+                                    display.css("font-size", "2em");
+                                };
+                            } else if (width >= 414) {
+
+                                if (display.text().length <= 13) {
+                                    $(".number").prop("disabled", false);
+                                    display.css("font-size", "3em");
+                                } else if (display.text().length > 25) {
+                                    $(".number").prop("disabled", true);
+                                } else if (display.text().length > 19) {
+                                    display.css("font-size", "1.5em");
+                                } else if (display.text().length > 13) {
+                                    display.css("font-size", "2em");
+                                };
+                            } else {
+
+                                if (display.text().length <= 11) {
+
+                                    $(".number").prop("disabled", false);
+                                    display.css("font-size", "3em");
+                                } else if (display.text().length > 22) {
+                                    $(".number").prop("disabled", true);
+                                } else if (display.text().length > 16) {
+                                    display.css("font-size", "1.5em");
+                                } else if (display.text().length > 11) {
+                                    display.css("font-size", "2em");
+                                };
+                            };
+                        };
+
+                        if (!action) {
+
+                            if (displayedNum === "0" || prevKeyType === "operator" || prevKeyType === "calculate") { //When the user hasn't keyed in an input
+
+                                display.text(keyContent);
+                                if (list.hasClass("isDepressed")) {
+
+                                    list.removeClass("isDepressed");
+                                };
+                                calculator.data("prevKeyType", "number"); //Let the calculator know the previous key is a number
+                            } else { //After an input
+
+                                display.append(keyContent);                            
+                                resDisplay();
+                            };
+                            
+                        } else if (action === "deci") {
+
+                            if (prevKeyType !== "calculate") {
+
+                                if (!display.text().includes(".")) {
+
+                                    display.append(".");
+                                };
+                            };
+                        } else if (
+
+                            action === "add" ||
+                            action === "sub" ||
+                            action === "mul" ||
+                            action === "div"
+                        ) {
+                            
+                            $(".number").prop("disabled", false);
+                            if (prevKeyType !== "operator") {
+                                
+                                oprArray.push(action);
+                                const numInArray = oprArray.length;
+
+                                if (numInArray == 1) {
+
+                                    key.addClass("isDepressed"); //Showing which operator is in action
+                                    //Saving the parameters to be calculated
+                                    saveValues();
+                                } else if (numInArray > 1) {
+
+                                    removed = oprArray.shift();
+                                    key.addClass("isDepressed"); //Showing which operator is in action
+                                    //This code causes the action operator act like the calculate action
+                                    toCalculate();
+                                    display.text(calculate(firstValue,operator,secondValue)); //calculate function required globally
+                                    //Saving the parameters to be calculated
+                                    saveValues();
+                                };
+                            };
+
+                        } else if (action === "cal") {
+
+                            if (prevKeyType !== "calculate") {
+
+                                toCalculate();
+
+                                if (firstValue) {
+
+                                    display.text(calculate(firstValue,operator,secondValue)); //calculate function required globally
+                                    calculator.data("prevKeyType", "calculate"); //Let the calculator know the prev key is the calculate button 
+                                    oprArray.splice(action);
+                                };
+                            };
+
+                            resDisplay();
+                            $(".number").prop("disabled", false);
+                        } else if (action === "clear") {
+
+                            display.text("0");
+                            oprArray.splice(action);
+                            $(".number").prop("disabled", false);
+                            display.css("font-size", "3em");
+                        } else {
+
+                            console.log("invalid input");
+                        };   
+                    };
+                });
+            });
+            
+        </script>
+    </body>
+    
+    
+</html>

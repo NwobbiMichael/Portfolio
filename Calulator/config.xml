@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<widget  android-versionCode="1" id="com.jabertrontech.easycalculator" version="1.3.0"
+    xmlns="https://www.w3.org/ns/widgets">
+
+    <name short="Easy Calc">Easy Calculator</name>
+    <description>An easy, simple, user-friendly calculator</description>
+    <icon src="/www/images/iconTemplate.png" />
+    <content src="index.html"></content>
+    <access origin="*"></access>
+    <author email="mikescott.nm@gmail.com" href="https://jabertrontech">Jabertron Tech</author>
+    <allow-intent href="tel:*" />       
+    <preference name="orientation" value="portrait"></preference>
+    <preference name="permissions" value="none"></preference>
+
+    <platform name="electron">
+        <icon src="res/iconTemplate" target="app" />
+        <icon src="res/iconTemplate" target="installer" />
+    </platform>
+</widget>
