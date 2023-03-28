@@ -60,7 +60,7 @@ $(document).ready(function() {
                 await sleep(300);
                 $("#js-text").append(stackArray[i][j]);
             };
-            await sleep(300);
+            await sleep(500);
             for (j = 0; j <= stackArray[i].length; j++) {
                 await sleep(100);
                 $("#js-text").each(function() {
